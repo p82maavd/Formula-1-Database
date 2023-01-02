@@ -5,9 +5,10 @@ services:
     image: mysql
     ports:
       - "32000:3306"
-    command: --init-file /db/init.sql
+    command: --init-file /db/schema.sql | /db/data.sql
     volumes:
-        - ./db/init.sql:/db/init.sql
+        - ./db/schema.sql:/db/schema.sql
+        - ./db/data.sql:/db/data.sql
     environment:
         MYSQL_ROOT_USER: root
         MYSQL_ROOT_PASSWORD: root
