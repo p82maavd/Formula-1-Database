@@ -76,10 +76,10 @@ SELECT AVG(laps)
 FROM Circuit
 
 /*4;2;20;Select numbers of dnfs of drivers in season 2022*/
-SELECT driver.firstName,Driver.lastName, sum(dnf)
+SELECT Driver.firstName,Driver.lastName, sum(dnf)
 from RaceResult rr1
-join driver on rr1.driverId = driver.driverId
-join race on rr1.raceId = race.raceId and race.season=2022
+join Driver on rr1.driverId = Driver.driverId
+join Race on rr1.raceId = Race.raceId and Race.season=2022
 group by Driver.driverId,Driver.firstName, Driver.lastName
 
 /*4;3;1;Select the driver/drivers with more start position equals to 1(pole position)*/
@@ -142,7 +142,7 @@ GROUP BY team.name
 --GROUP 6
 /*6;1;10;Select sum of points in each race for the season 2021 of each team order descendent plus the points of fastest lap of each race*/
 
-select  team.name, sum(points)+(select count( t.teamId) as cont
+select  Team.name, sum(points)+(select count( t.teamId) as cont
                                             from Driver d2
                                             join Driver_Team dt2 on d2.driverId = dt2.driverId and dt2.season=2022
                                             join Team t2 on t2.teamId = dt2.teamId
@@ -152,7 +152,7 @@ select  team.name, sum(points)+(select count( t.teamId) as cont
                                                     join Driver d3 on rr1.driverId = d3.driverId
                                                     join Driver_Team dt3 on d3.driverId = dt3.driverId and dt3.season=2022
                                                     join Team t3 on t3.teamId = dt3.teamId
-                                                    join race r1 on rr1.raceId = r1.raceId and r1.season=2022
+                                                    join Race r1 on rr1.raceId = r1.raceId and r1.season=2022
                                                     group by  t3.teamId,rr1.raceId
                                                     HAVING min(fastestLap) = (SELECT  min(fastestLap)
                                                                                     from RaceResult rr2
@@ -160,7 +160,7 @@ select  team.name, sum(points)+(select count( t.teamId) as cont
                                                                                     )
                                                     ) t on t2.teamId=t.teamId
                                              where t2.teamId=Team.teamId
-                                            group by t2.teamId)
+                                            group by t2.teamId) as totalPoints
 from (select driverId, raceId, startPosition, position, time, dnf, fastestLap,
     CASE
         WHEN position = 1 THEN 25
@@ -176,12 +176,12 @@ from (select driverId, raceId, startPosition, position, time, dnf, fastestLap,
         ELSE 0
     END AS points
     from RaceResult) RaceResultPoints 
-join driver on RaceResultPoints.driverId = driver.driverId
-join Driver_Team on driver.driverId = Driver_Team.driverId and Driver_Team.season =2022
+join Driver on RaceResultPoints.driverId = Driver.driverId
+join Driver_Team on Driver.driverId = Driver_Team.driverId and Driver_Team.season =2022
 join Team on Team.teamId = Driver_Team.teamId
-join race on RaceResultPoints.raceId = race.raceId and race.season=2022
-group by team.teamId, team.name
-order by sum(points) DESC
+join Race on RaceResultPoints.raceId = Race.raceId and Race.season=2022
+group by Team.teamId, Team.name
+order by totalPoints DESC
 
 /*6;2;20;
 Select sum of points in each race for the season 2021 of each driver order descendent plus the points of fastest lap of each race*/
@@ -191,7 +191,7 @@ select RaceResultPoints.driverId,  firstName, lastName, sum(points)+(select coun
                                             left join (SELECT  rr1.driverId
                                                     from RaceResult rr1
                                                     
-                                                    join race r1 on rr1.raceId = r1.raceId and r1.season=2021
+                                                    join Race r1 on rr1.raceId = r1.raceId and r1.season=2021
                                                     group by  rr1.driverId,rr1.raceId
                                                     HAVING min(fastestLap) = (SELECT  min(fastestLap)
                                                                                     from RaceResult rr2
@@ -199,8 +199,7 @@ select RaceResultPoints.driverId,  firstName, lastName, sum(points)+(select coun
                                                                                     )
                                                     ) t on d2.driverId=t.driverId
                                              where d2.driverId=RaceResultPoints.driverId
-                                            group by d2.driverId)
-                                            
+                                            group by d2.driverId) as 'totalPoints'
 from (select driverId, raceId, startPosition, position, time, dnf, fastestLap,
     CASE
         WHEN position = 1 THEN 25
@@ -216,7 +215,7 @@ from (select driverId, raceId, startPosition, position, time, dnf, fastestLap,
         ELSE 0
     END AS points
     from RaceResult) RaceResultPoints 
-join driver d1 on RaceResultPoints.driverId = d1.driverId
-join race on RaceResultPoints.raceId = race.raceId and race.season=2021
+join Driver d1 on RaceResultPoints.driverId = d1.driverId
+join Race on RaceResultPoints.raceId = Race.raceId and Race.season=2021
 group by RaceResultPoints.driverId, firstName, lastName
-order by sum(points) DESC
+order by totalPoints DESC

@@ -1,7 +1,6 @@
 
 
 import random
-import numpy
 
 raceid2022=[23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44]
 raceid2021=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22]
@@ -53,7 +52,7 @@ for race in raceid2021:
             else:
                 prob=prob-0.06
             
-        cadena="INSERT INTO RaceResult Values("+str(x[0])+", "+str(x[1])+", "+str(x[2])+", "+str(x[3])+", '"+tiempomejor+"', "+str(randomdnf)+", '"+vueltarapida+"')"+"\n"
+        cadena="INSERT INTO RaceResult Values("+str(x[0])+", "+str(x[1])+", "+str(x[2])+", "+str(x[3])+", '"+tiempomejor+"', "+str(randomdnf)+", '"+vueltarapida+"');"+"\n"
         f.write(cadena)
 
         variable=variable+random.randrange(0,3)
